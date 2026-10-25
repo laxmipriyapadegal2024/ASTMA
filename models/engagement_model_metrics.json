@@ -1,0 +1,4 @@
+{
+  "status": "insufficient_data",
+  "message": "At least 10 labeled rows are required for a stable train/validation/test split."
+}

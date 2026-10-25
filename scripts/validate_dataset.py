@@ -1,0 +1,30 @@
+from __future__ import annotations
+
+import argparse
+import sys
+from pathlib import Path
+
+import pandas as pd
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from src.data.validation import validate_dataset
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Validate a political narrative dataset.")
+    parser.add_argument("--input", required=True, help="Input CSV file path.")
+    args = parser.parse_args()
+
+    path = Path(args.input)
+    df = pd.read_csv(path)
+    validation = validate_dataset(df)
+    print(f"Errors: {validation['errors']}")
+    print(f"Warnings: {validation['warnings']}")
+    print(f"Duplicate rows: {validation['duplicate_rows']}")
+
+
+if __name__ == "__main__":
+    main()
