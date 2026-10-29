@@ -1,4 +1,84 @@
 {
-  "status": "insufficient_data",
-  "message": "At least 10 labeled rows are required for a stable train/validation/test split."
+  "dataset_size": 500,
+  "random_seed": 42,
+  "models": {
+    "logistic_regression": {
+      "validation": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 49,
+        "confusion_matrix": [
+          [
+            51,
+            0
+          ],
+          [
+            0,
+            49
+          ]
+        ]
+      },
+      "held_out_test": {
+        "accuracy": 0.97,
+        "precision": 0.9795918367346939,
+        "recall": 0.96,
+        "f1": 0.9696969696969697,
+        "support": 50,
+        "confusion_matrix": [
+          [
+            49,
+            1
+          ],
+          [
+            2,
+            48
+          ]
+        ]
+      },
+      "train_size": 300,
+      "validation_size": 100,
+      "test_size": 100
+    },
+    "linear_svm": {
+      "validation": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 49,
+        "confusion_matrix": [
+          [
+            51,
+            0
+          ],
+          [
+            0,
+            49
+          ]
+        ]
+      },
+      "held_out_test": {
+        "accuracy": 0.98,
+        "precision": 0.98,
+        "recall": 0.98,
+        "f1": 0.98,
+        "support": 50,
+        "confusion_matrix": [
+          [
+            49,
+            1
+          ],
+          [
+            1,
+            49
+          ]
+        ]
+      },
+      "train_size": 300,
+      "validation_size": 100,
+      "test_size": 100
+    }
+  }
 }

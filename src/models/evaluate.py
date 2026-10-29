@@ -18,7 +18,7 @@ def _binary_metrics(y_true: pd.Series, y_pred: np.ndarray) -> dict[str, Any]:
     precision, recall, f1, support = precision_recall_fscore_support(
         y_true, y_pred, average="binary", zero_division=0, labels=[0, 1]
     )
-    support_value = int(support) if support is not None else 0
+    support_value = int((y_true == 1).sum())
     return {
         "accuracy": accuracy_score(y_true, y_pred),
         "precision": float(precision),
