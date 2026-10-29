@@ -1,8 +1,12 @@
 from __future__ import annotations
 
 import pandas as pd
-import plotly.express as px
 import streamlit as st
+
+try:
+    import plotly.express as px
+except ModuleNotFoundError:
+    px = None
 
 from src.data.loaders import load_sample_dataset
 from src.features.ngrams import extract_top_ngrams, summarize_engagement_patterns
@@ -18,9 +22,12 @@ else:
     counts.columns = ["label", "count"]
     st.bar_chart(counts.set_index("label")["count"])
 
-    if "topic" in df.columns:
+    if "topic" in df.columns and px is not None:
         fig = px.histogram(df, x="topic", title="Topic distribution")
         st.plotly_chart(fig, width="stretch")
+    elif "topic" in df.columns:
+        topic_counts = df["topic"].astype(str).value_counts()
+        st.bar_chart(topic_counts)
 
     st.subheader("Top phrase patterns")
     phrase_frame = pd.DataFrame(
