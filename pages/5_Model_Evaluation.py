@@ -20,6 +20,10 @@ else:
         "random_seed": data.get("random_seed"),
         "class_distribution": data.get("class_distribution"),
     })
+    st.warning(
+        "These scores come from synthetic demonstration data with repeated language patterns. "
+        "Use them to compare the baseline models only; they are not estimates of real-world accuracy."
+    )
 
     model_rows = []
     for model_name, model_data in data.get("models", {}).items():

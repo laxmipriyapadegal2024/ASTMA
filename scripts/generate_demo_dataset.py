@@ -44,6 +44,9 @@ CLAIM_TEMPLATES = [
     "The latest {topic} report recorded {number} new cases during the review period.",
     "The agency announced a {number} percent change in its {topic} budget.",
     "Independent observers documented {number} incidents related to {topic}.",
+    "A committee reviewed {number} proposals connected with the {topic} response.",
+    "The public record contains {number} references to the {topic} decision.",
+    "Researchers compared {number} regional reports about the {topic} issue.",
 ]
 
 BAIT_PREFIXES = [
@@ -59,6 +62,24 @@ MANIPULATION_PREFIXES = [
     "This shocking decision will destroy everything.",
     "Choose one side or face the consequences.",
 ]
+
+NEUTRAL_PREFIXES = [
+    "The briefing notes that",
+    "A public summary states that",
+    "According to the report,",
+    "The available record indicates that",
+]
+
+
+def build_generated_text(claim: str, offset: int, is_bait: bool, is_manipulative: bool) -> str:
+    if is_bait:
+        return f"{BAIT_PREFIXES[offset % len(BAIT_PREFIXES)]} {claim}"
+    if is_manipulative:
+        return f"{MANIPULATION_PREFIXES[offset % len(MANIPULATION_PREFIXES)]} {claim}"
+    # Some neutral posts discuss sharing or quoting information without soliciting engagement.
+    if offset % 7 == 0:
+        return f"The notice asks residents to share accurate information. {claim}"
+    return f"{NEUTRAL_PREFIXES[offset % len(NEUTRAL_PREFIXES)]} {claim.lower()}"
 
 
 def build_rows(existing_rows: list[dict[str, str]], target_size: int) -> list[dict[str, str]]:
@@ -80,15 +101,8 @@ def build_rows(existing_rows: list[dict[str, str]], target_size: int) -> list[di
         is_bait = offset % 2 == 0
         is_manipulative = offset % 4 == 0
 
-        if is_bait:
-            text = f"{BAIT_PREFIXES[offset % len(BAIT_PREFIXES)]} {claim}"
-            engagement_label = "1"
-        elif is_manipulative:
-            text = f"{MANIPULATION_PREFIXES[offset % len(MANIPULATION_PREFIXES)]} {claim}"
-            engagement_label = "0"
-        else:
-            text = claim
-            engagement_label = "0"
+        text = build_generated_text(claim, offset, is_bait, is_manipulative)
+        engagement_label = "1" if is_bait else "0"
 
         labels = ""
         if is_bait:
@@ -119,6 +133,11 @@ def main() -> None:
     parser.add_argument("--input", type=Path, default=PROJECT_ROOT / "data/sample/sample_posts.csv")
     parser.add_argument("--output", type=Path, default=None)
     parser.add_argument("--rows", type=int, default=500)
+    parser.add_argument(
+        "--regenerate",
+        action="store_true",
+        help="Regenerate rows after the original 22 seed records instead of preserving existing generated rows.",
+    )
     args = parser.parse_args()
 
     if args.rows < 1:
@@ -127,6 +146,9 @@ def main() -> None:
     output_path = args.output or args.input
     with args.input.open("r", encoding="utf-8", newline="") as handle:
         existing_rows = list(csv.DictReader(handle))
+
+    if args.regenerate:
+        existing_rows = existing_rows[:22]
 
     if len(existing_rows) > args.rows:
         raise SystemExit(f"Input already contains {len(existing_rows)} rows, more than requested {args.rows}.")
